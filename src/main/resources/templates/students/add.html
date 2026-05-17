@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaPro | Add New Student</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          min-height: 100vh;
+        }
+
+        /* Main Container */
+        .main-container {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 30px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+          background: white;
+          border-radius: 20px;
+          padding: 20px 30px;
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+          font-size: 24px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+          padding: 10px 24px;
+          background: #f1f5f9;
+          color: #475569;
+          border-radius: 30px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+          background: #4f46e5;
+          color: white;
+        }
+
+        /* Page Header */
+        .page-header {
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          border-radius: 24px;
+          padding: 35px 40px;
+          margin-bottom: 30px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .page-header::before {
+          content: '👨‍🎓';
+          position: absolute;
+          bottom: -20px;
+          right: 20px;
+          font-size: 100px;
+          opacity: 0.1;
+        }
+
+        .page-header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .page-header p {
+          opacity: 0.8;
+          font-size: 14px;
+        }
+
+        /* Form Card */
+        .form-card {
+          background: white;
+          border-radius: 24px;
+          padding: 35px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Form Grid */
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 25px;
+        }
+
+        .full-width {
+          grid-column: span 2;
+        }
+
+        /* Form Groups */
+        .form-group {
+          margin-bottom: 5px;
+        }
+
+        .form-group label {
+          display: block;
+          font-size: 13px;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+          color: #ef4444;
+          margin-left: 4px;
+        }
+
+        .input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 14px;
+          color: #94a3b8;
+          font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+          width: 100%;
+          padding: 12px 16px 12px 42px;
+          border: 2px solid #e2e8f0;
+          border-radius: 14px;
+          font-size: 14px;
+          transition: all 0.3s;
+          background: #f8fafc;
+          font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #4f46e5;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        /* Validation States */
+        .form-group input.valid,
+        .form-group select.valid,
+        .form-group textarea.valid {
+          border-color: #10b981;
+          background: #ecfdf5;
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid,
+        .form-group textarea.invalid {
+          border-color: #ef4444;
+          background: #fef2f2;
+        }
+
+        /* Validation Messages */
+        .validation-message {
+          font-size: 11px;
+          margin-top: 6px;
+          margin-left: 10px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-weight: 500;
+        }
+
+        .validation-message.error {
+          color: #ef4444;
+        }
+
+        .validation-message.success {
+          color: #10b981;
+        }
+
+        .validation-message i {
+          font-size: 10px;
+        }
+
+        /* Action Buttons */
+        .form-actions {
+          display: flex;
+          gap: 15px;
+          margin-top: 30px;
+          padding-top: 25px;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-save {
+          padding: 14px 32px;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          color: white;
+          border: none;
+          border-radius: 14px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 14px;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-save:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+        }
+
+        .btn-cancel {
+          padding: 14px 32px;
+          background: white;
+          color: #64748b;
+          border: 2px solid #e2e8f0;
+          border-radius: 14px;
+          cursor: pointer;
+          font-weight: 600;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+        }
+
+        /* Toast Message */
+        .toast {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+          animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.error { border-left: 4px solid #ef4444; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .main-container { padding: 20px; }
+          .form-grid { grid-template-columns: 1fr; }
+          .full-width { grid-column: span 1; }
+          .form-card { padding: 25px; }
+          .form-actions { flex-direction: column; }
+          .page-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="logo">AcademiaPro</div>
+        <a href="/students" class="back-btn"><i class="fas fa-arrow-left"></i> Cancel & Back</a>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-user-plus"></i> Add New Student</h1>
+        <p>Fill in the details below to register a new student</p>
+    </div>
+
+    <!-- Error Toast -->
+    <div th:if="${error}" class="toast error" id="errorToast">
+        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <form id="studentForm" th:action="@{/students/add}" th:object="${student}" method="post" onsubmit="return validateForm()">
+
+            <div class="form-grid">
+                <!-- Student ID -->
+                <div class="form-group">
+                    <label>Student ID <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-id-card input-icon"></i>
+                        <input type="text" id="studentId" name="studentId" th:field="*{studentId}" placeholder="e.g., S001" required>
+                    </div>
+                    <div class="validation-message" id="studentIdMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter a unique student ID</span>
+                    </div>
+                </div>
+
+                <!-- First Name -->
+                <div class="form-group">
+                    <label>First Name <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="firstName" name="firstName" th:field="*{firstName}" placeholder="Enter first name" required>
+                    </div>
+                    <div class="validation-message" id="firstNameMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter your first name</span>
+                    </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label>Last Name <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="lastName" name="lastName" th:field="*{lastName}" placeholder="Enter last name" required>
+                    </div>
+                    <div class="validation-message" id="lastNameMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter your last name</span>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" th:field="*{email}" placeholder="student@university.edu" required>
+                    </div>
+                    <div class="validation-message" id="emailMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter a valid email address</span>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label>Phone</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input type="tel" id="phone" name="phone" th:field="*{phone}" placeholder="+94 XX XXX XXXX">
+                    </div>
+                    <div class="validation-message" id="phoneMsg">
+                        <i class="fas fa-info-circle"></i> <span>Optional - Enter contact number</span>
+                    </div>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-alt input-icon"></i>
+                        <input type="date" id="dob" name="dateOfBirth" th:field="*{dateOfBirth}">
+                    </div>
+                    <div class="validation-message" id="dobMsg">
+                        <i class="fas fa-info-circle"></i> <span>Select date of birth</span>
+                    </div>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-venus-mars input-icon"></i>
+                        <select id="gender" name="gender" th:field="*{gender}">
+                            <option value="">Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="validation-message" id="genderMsg">
+                        <i class="fas fa-info-circle"></i> <span>Select your gender</span>
+                    </div>
+                </div>
+
+                <!-- Address - Full Width -->
+                <div class="form-group full-width">
+                    <label>Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-marker-alt input-icon"></i>
+                        <textarea id="address" name="address" th:field="*{address}" rows="3" placeholder="Enter complete address..."></textarea>
+                    </div>
+                    <div class="validation-message" id="addressMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter your address (optional)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="submitBtn">
+                    <i class="fas fa-save"></i> Save Student
+                </button>
+                <a href="/students" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Field validation functions
+    function validateStudentId() {
+      const field = document.getElementById('studentId');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('studentIdMsg');
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Student ID is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value.length < 3) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Student ID must be at least 3 characters</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid student ID</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateName(fieldId, fieldName) {
+      const field = document.getElementById(fieldId);
+      const value = field.value.trim();
+      const msgDiv = document.getElementById(fieldId + 'Msg');
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>' + fieldName + ' is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value.length < 2) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>' + fieldName + ' must be at least 2 characters</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid ' + fieldName.toLowerCase() + '</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateEmail() {
+      const field = document.getElementById('email');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('emailMsg');
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Email is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (!emailPattern.test(value)) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Enter a valid email (e.g., name@domain.com)</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid email address</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validatePhone() {
+      const field = document.getElementById('phone');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('phoneMsg');
+      const phonePattern = /^[0-9+\-\s]{10,15}$/;
+
+      if (value === '') {
+        field.classList.remove('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Optional - Enter contact number</span>';
+        msgDiv.classList.remove('error', 'success');
+        return true;
+      } else if (!phonePattern.test(value)) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Enter a valid phone number (10-15 digits)</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid phone number</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateGender() {
+      const field = document.getElementById('gender');
+      const value = field.value;
+      const msgDiv = document.getElementById('genderMsg');
+
+      if (value === '') {
+        field.classList.remove('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Select your gender (optional)</span>';
+        msgDiv.classList.remove('error', 'success');
+        return true;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Gender selected</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateDob() {
+      const field = document.getElementById('dob');
+      const value = field.value;
+      const msgDiv = document.getElementById('dobMsg');
+
+      if (value === '') {
+        field.classList.remove('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Select date of birth (optional)</span>';
+        msgDiv.classList.remove('error', 'success');
+        return true;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Date of birth selected</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    // Real-time validation event listeners
+    document.getElementById('studentId').addEventListener('input', validateStudentId);
+    document.getElementById('firstName').addEventListener('input', () => validateName('firstName', 'First Name'));
+    document.getElementById('lastName').addEventListener('input', () => validateName('lastName', 'Last Name'));
+    document.getElementById('email').addEventListener('input', validateEmail);
+    document.getElementById('phone').addEventListener('input', validatePhone);
+    document.getElementById('gender').addEventListener('change', validateGender);
+    document.getElementById('dob').addEventListener('change', validateDob);
+
+    // Full form validation
+    function validateForm() {
+      const isValid = validateStudentId() &
+                      validateName('firstName', 'First Name') &
+                      validateName('lastName', 'Last Name') &
+                      validateEmail() &
+                      validatePhone() &
+                      validateGender() &
+                      validateDob();
+
+      if (!isValid) {
+        // Scroll to first error
+        const firstInvalid = document.querySelector('.invalid');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstInvalid.focus();
+        }
+        return false;
+      }
+      return true;
+    }
+
+    // Auto-hide toast
+    setTimeout(() => {
+      const toast = document.getElementById('errorToast');
+      if (toast) toast.style.display = 'none';
+    }, 5000);
+</script>
+</body>
+</html>
