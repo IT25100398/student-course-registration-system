@@ -10,7 +10,7 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.5</version>
         <relativePath/>
-    </parent>
+    </parent>git init
 
     <groupId>com.example</groupId>
     <artifactId>CourseRegistration</artifactId>

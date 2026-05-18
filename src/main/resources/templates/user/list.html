@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: common-header"></head>
+<body>
+
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-users-cog"></i> User Management</h1>
+        <p>Manage system users - Admins, Staff, and Students</p>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/users/add" class="btn-primary"><i class="fas fa-plus"></i> Add New User</a>
+        <a href="/users" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</a>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.fullName}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                        <span th:classappend="${user.role == 'ADMIN'} ? 'role-admin' :
+                                             (${user.role == 'STAFF'} ? 'role-staff' : 'role-student')"
+                              class="role-badge">
+                            <i th:classappend="${user.role == 'ADMIN'} ? 'fa-crown' :
+                                             (${user.role == 'STAFF'} ? 'fa-user-tie' : 'fa-user-graduate')"
+                               class="fas"></i>
+                            <span th:text="${user.role}"></span>
+                        </span>
+                </td>
+                <td>
+                        <span class="status-badge" th:classappend="${user.status == 'ACTIVE'} ? 'status-active' : 'status-inactive'"
+                              th:text="${user.status}"></span>
+                </td>
+                <td th:text="${user.lastLogin != null} ? ${#temporals.format(user.lastLogin, 'dd/MM/yyyy HH:mm')} : '-'">-</td>
+                <td class="action-links">
+                    <a th:href="@{/users/edit/{id}(id=${user.id})}" class="edit-link"><i class="fas fa-edit"></i> Edit</a>
+                    <a th:href="@{/users/delete/{id}(id=${user.id})}" class="delete-link"
+                       onclick="return confirm('Delete this user?')"><i class="fas fa-trash-alt"></i> Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        border-radius: 20px;
+        padding: 30px 35px;
+        margin-bottom: 25px;
+        color: white;
+    }
+    .page-header h1 { font-size: 24px; margin-bottom: 8px; }
+
+    .btn-primary {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-secondary {
+        padding: 10px 24px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        overflow-x: auto;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .data-table th, .data-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .data-table th {
+        background: #f8fafc;
+        font-weight: 600;
+    }
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .role-admin { background: #fef3c7; color: #d97706; }
+    .role-staff { background: #dbeafe; color: #2563eb; }
+    .role-student { background: #d1fae5; color: #059669; }
+    .status-active { background: #d1fae5; color: #059669; }
+    .status-inactive { background: #fee2e2; color: #dc2626; }
+    .edit-link { color: #4f46e5; text-decoration: none; margin-right: 12px; }
+    .delete-link { color: #ef4444; text-decoration: none; }
+
+    @media (max-width: 768px) {
+        .table-container { padding: 15px; }
+        .data-table { font-size: 12px; }
+        .action-buttons { flex-direction: column; }
+    }
+</style>
+</body>
+</html>
