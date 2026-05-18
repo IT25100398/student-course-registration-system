@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaPro - Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0f2a 0%, #0f1a3a 50%, #162b4a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(59,130,246,0.15) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 80% 50%, rgba(139,92,246,0.1) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-10%, -10%) scale(1); opacity: 0.5; }
+            50% { transform: translate(0%, 0%) scale(1.1); opacity: 0.8; }
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 45px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-icon {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 36px;
+            box-shadow: 0 10px 25px -5px rgba(37,99,235,0.3);
+        }
+
+        .logo-section h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-section p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        /* Form Group with Inline Validation */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .input-group:hover {
+            border-color: #94a3b8;
+        }
+
+        .input-group.focused {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+            background: white;
+        }
+
+        .input-group.error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .input-group.success {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .input-icon {
+            padding: 0 16px;
+            font-size: 18px;
+            color: #94a3b8;
+            transition: color 0.3s;
+        }
+
+        .input-group.focused .input-icon {
+            color: #2563eb;
+        }
+
+        .input-group.error .input-icon {
+            color: #ef4444;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 16px 15px 0;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toggle-password {
+            padding: 0 16px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #2563eb;
+        }
+
+        /* Inline Error Message - Text box එකට යටින් */
+        .error-message {
+            font-size: 11px;
+            margin-top: 6px;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .error-message i {
+            font-size: 10px;
+        }
+
+        .error-message.text-red {
+            color: #ef4444;
+        }
+
+        .error-message.text-green {
+            color: #10b981;
+        }
+
+        /* Remember me & Forgot */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            font-size: 13px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #475569;
+        }
+
+        .checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .forgot-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: #1d4ed8;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(37,99,235,0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* Demo Credentials */
+        .demo-card {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .demo-card p {
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .demo-cred {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .demo-item {
+            background: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #2563eb;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+        }
+
+        .demo-item:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #059669;
+            border-left: 4px solid #10b981;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 35px 25px;
+            }
+            .logo-section h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="logo-section">
+            <div class="logo-icon">🎓</div>
+            <h1>AcademiaPro</h1>
+            <p>Student Course Registration System</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${param.error}" id="errorAlert" class="alert alert-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Invalid username or password. Please try again.</span>
+        </div>
+
+        <div th:if="${param.logout}" id="successAlert" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>You have been logged out successfully.</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" th:action="@{/login}" method="post" onsubmit="return validateForm()">
+            <!-- Username Field -->
+            <div class="form-group">
+                <div class="input-group" id="usernameGroup">
+                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                    <input type="text" id="username" name="username" placeholder="Email or Username" autofocus>
+                </div>
+                <div class="error-message" id="usernameError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <div class="input-group" id="passwordGroup">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="password" name="password" placeholder="Password">
+                    <span class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                    </span>
+                </div>
+                <div class="error-message" id="passwordError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="form-options">
+                <label class="checkbox">
+                    <input type="checkbox" name="remember-me"> Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span>Sign In</span>
+                <i class="fas fa-arrow-right"></i>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>Demo Access</span>
+        </div>
+
+        <div class="demo-card">
+            <p><i class="fas fa-flask"></i> Demo Credentials</p>
+            <div class="demo-cred">
+                <div class="demo-item" onclick="fillCredentials('admin', 'admin123')">
+                    <i class="fas fa-user-shield"></i> Admin
+                </div>
+                <div class="demo-item" onclick="fillCredentials('user', 'user123')">
+                    <i class="fas fa-user-graduate"></i> User
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Focus Effects
+    document.querySelectorAll('.input-group').forEach(group => {
+        const input = group.querySelector('input');
+        input.addEventListener('focus', () => {
+            group.classList.add('focused');
+        });
+        input.addEventListener('blur', () => {
+            group.classList.remove('focused');
+            validateField(input.id);
+        });
+    });
+
+    // Real-time Validation
+    document.getElementById('username').addEventListener('input', () => validateField('username'));
+    document.getElementById('password').addEventListener('input', () => validateField('password'));
+
+    function validateField(fieldId) {
+        const field = document.getElementById(fieldId);
+        const value = field.value.trim();
+        const group = document.getElementById(fieldId + 'Group');
+        const errorDiv = document.getElementById(fieldId + 'Error');
+        const errorSpan = errorDiv.querySelector('span');
+        const errorIcon = errorDiv.querySelector('i');
+
+        if (fieldId === 'username') {
+            if (value === '') {
+                group.classList.add('error');
+                group.classList.remove('success');
+                errorSpan.textContent = 'Username is required';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-green');
+                errorDiv.classList.add('text-red');
+                errorIcon.className = 'fas fa-exclamation-circle';
+                return false;
+            } else if (value.length < 3) {
+                group.classList.add('error');
+                group.classList.remove('success');
+                errorSpan.textContent = 'Username must be at least 3 characters';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-green');
+                errorDiv.classList.add('text-red');
+                errorIcon.className = 'fas fa-exclamation-circle';
+                return false;
+            } else {
+                group.classList.remove('error');
+                group.classList.add('success');
+                errorSpan.textContent = 'Username looks good!';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-red');
+                errorDiv.classList.add('text-green');
+                errorIcon.className = 'fas fa-check-circle';
+                return true;
+            }
+        }
+
+        if (fieldId === 'password') {
+            if (value === '') {
+                group.classList.add('error');
+                group.classList.remove('success');
+                errorSpan.textContent = 'Password is required';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-green');
+                errorDiv.classList.add('text-red');
+                errorIcon.className = 'fas fa-exclamation-circle';
+                return false;
+            } else if (value.length < 4) {
+                group.classList.add('error');
+                group.classList.remove('success');
+                errorSpan.textContent = 'Password must be at least 4 characters';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-green');
+                errorDiv.classList.add('text-red');
+                errorIcon.className = 'fas fa-exclamation-circle';
+                return false;
+            } else {
+                group.classList.remove('error');
+                group.classList.add('success');
+                errorSpan.textContent = 'Password is valid';
+                errorDiv.classList.add('show');
+                errorDiv.classList.remove('text-red');
+                errorDiv.classList.add('text-green');
+                errorIcon.className = 'fas fa-check-circle';
+                return true;
+            }
+        }
+        return true;
+    }
+
+    function validateForm() {
+        const isUsernameValid = validateField('username');
+        const isPasswordValid = validateField('password');
+
+        if (!isUsernameValid || !isPasswordValid) {
+            // Shake animation for invalid fields
+            if (!isUsernameValid) {
+                document.getElementById('usernameGroup').classList.add('shake');
+                setTimeout(() => document.getElementById('usernameGroup').classList.remove('shake'), 400);
+            }
+            if (!isPasswordValid) {
+                document.getElementById('passwordGroup').classList.add('shake');
+                setTimeout(() => document.getElementById('passwordGroup').classList.remove('shake'), 400);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // Toggle Password Visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.className = 'fas fa-eye';
+        }
+    }
+
+    // Fill Demo Credentials
+    function fillCredentials(username, password) {
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+        validateField('username');
+        validateField('password');
+    }
+
+    // Auto hide alerts after 5 seconds
+    setTimeout(() => {
+        const errorAlert = document.getElementById('errorAlert');
+        const successAlert = document.getElementById('successAlert');
+        if (errorAlert) errorAlert.style.display = 'none';
+        if (successAlert) successAlert.style.display = 'none';
+    }, 5000);
+</script>
+</body>
+</html>
