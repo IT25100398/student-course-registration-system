@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaPro | Course Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          min-height: 100vh;
+        }
+
+        /* Main Container */
+        .main-container {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 30px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+          background: white;
+          border-radius: 20px;
+          padding: 20px 30px;
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+          font-size: 24px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .back-home {
+          padding: 10px 24px;
+          background: #f1f5f9;
+          color: #475569;
+          border-radius: 30px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .back-home:hover {
+          background: #4f46e5;
+          color: white;
+        }
+
+        /* Page Header */
+        .page-header {
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          border-radius: 24px;
+          padding: 35px 40px;
+          margin-bottom: 30px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .page-header::before {
+          content: '📚';
+          position: absolute;
+          bottom: -20px;
+          right: 20px;
+          font-size: 120px;
+          opacity: 0.1;
+        }
+
+        .page-header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .page-header p {
+          opacity: 0.8;
+          font-size: 14px;
+        }
+
+        /* Search & Filter Bar */
+        .filter-bar {
+          background: white;
+          border-radius: 20px;
+          padding: 20px 25px;
+          margin-bottom: 25px;
+          display: flex;
+          gap: 20px;
+          flex-wrap: wrap;
+          align-items: flex-end;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+          flex: 1;
+          min-width: 180px;
+        }
+
+        .filter-group label {
+          display: block;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #64748b;
+          margin-bottom: 8px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 14px;
+          transition: all 0.3s;
+          background: #f8fafc;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+          outline: none;
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        .search-btn {
+          padding: 12px 28px;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .search-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+        }
+
+        .reset-btn {
+          padding: 12px 28px;
+          background: #f1f5f9;
+          color: #475569;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+          background: #e2e8f0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 25px;
+        }
+
+        .btn-primary {
+          padding: 12px 28px;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+        }
+
+        .btn-secondary {
+          padding: 12px 28px;
+          background: white;
+          color: #4f46e5;
+          border: 2px solid #4f46e5;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+          background: #4f46e5;
+          color: white;
+        }
+
+        /* Table */
+        .table-container {
+          background: white;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+          margin-bottom: 25px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        th {
+          background: #f8fafc;
+          padding: 18px 20px;
+          text-align: left;
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+          padding: 16px 20px;
+          border-bottom: 1px solid #f1f5f9;
+          font-size: 14px;
+          color: #1e293b;
+        }
+
+        tr:hover {
+          background: #f8fafc;
+        }
+
+        /* Capacity Badge */
+        .capacity-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .capacity-low {
+          background: #d1fae5;
+          color: #059669;
+        }
+
+        .capacity-medium {
+          background: #fef3c7;
+          color: #d97706;
+        }
+
+        .capacity-high {
+          background: #fee2e2;
+          color: #dc2626;
+        }
+
+        /* Action Links */
+        .action-links {
+          display: flex;
+          gap: 12px;
+        }
+
+        .edit-link {
+          color: #4f46e5;
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.3s;
+        }
+
+        .edit-link:hover {
+          color: #06b6d4;
+        }
+
+        .delete-link {
+          color: #ef4444;
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.3s;
+        }
+
+        .delete-link:hover {
+          color: #dc2626;
+        }
+
+        /* Pagination */
+        .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          margin-top: 20px;
+          flex-wrap: wrap;
+        }
+
+        .page-btn {
+          padding: 10px 16px;
+          background: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+          background: #4f46e5;
+          color: white;
+          border-color: #4f46e5;
+        }
+
+        .page-btn.active {
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          color: white;
+          border-color: transparent;
+        }
+
+        .page-info {
+          padding: 10px 20px;
+          color: #64748b;
+          font-size: 14px;
+        }
+
+        /* No Results */
+        .no-results {
+          text-align: center;
+          padding: 60px;
+          color: #94a3b8;
+        }
+
+        .no-results i {
+          font-size: 48px;
+          margin-bottom: 15px;
+          opacity: 0.5;
+        }
+
+        /* Toast Message */
+        .toast {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+          animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .main-container { padding: 20px; }
+          .filter-bar { flex-direction: column; }
+          .filter-group { width: 100%; }
+          .action-buttons { flex-direction: column; }
+          table { display: block; overflow-x: auto; }
+          .page-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="logo">AcademiaPro</div>
+        <a href="/dashboard" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-book"></i> Course Management</h1>
+        <p>Manage, track and organize all course records efficiently</p>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="toast success" id="successToast">
+        <i class="fas fa-check-circle" style="color: #10b981;"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="toast error" id="errorToast">
+        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label><i class="fas fa-search"></i> Search</label>
+            <input type="text" id="searchInput" placeholder="Search by course code, name or instructor...">
+        </div>
+        <div class="filter-group">
+            <label><i class="fas fa-filter"></i> Department</label>
+            <select id="deptFilter">
+                <option value="all">All Departments</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Business">Business</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fas fa-chart-line"></i> Capacity Status</label>
+            <select id="capacityFilter">
+                <option value="all">All</option>
+                <option value="low">Available (0-40%)</option>
+                <option value="medium">Filling (40-70%)</option>
+                <option value="high">Almost Full (70-100%)</option>
+                <option value="full">Full (100%)</option>
+            </select>
+        </div>
+        <div>
+            <button class="search-btn" onclick="applyFilters()"><i class="fas fa-search"></i> Search</button>
+            <button class="reset-btn" onclick="resetFilters()"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="/courses/add" class="btn-primary"><i class="fas fa-plus"></i> Add New Course</a>
+        <a href="/courses" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh List</a>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <table id="courseTable">
+            <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Credits</th>
+                <th>Instructor</th>
+                <th>Department</th>
+                <th>Capacity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody">
+            <tr th:each="course : ${courses}">
+                <td th:text="${course.courseCode}"></td>
+                <td th:text="${course.courseName}"></td>
+                <td th:text="${course.credits}"></td>
+                <td th:text="${course.instructor}"></td>
+                <td th:text="${course.department}"></td>
+                <td>
+            <span th:classappend="${course.enrolledCount == course.capacity} ? 'capacity-high' :
+                                 (${course.enrolledCount} / ${course.capacity} > 0.7 ? 'capacity-high' :
+                                 (${course.enrolledCount} / ${course.capacity} > 0.4 ? 'capacity-medium' : 'capacity-low'))"
+                  class="capacity-badge">
+              <i th:classappend="${course.enrolledCount == course.capacity} ? 'fas fa-times-circle' :
+                                 (${course.enrolledCount} / ${course.capacity} > 0.7 ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle')"
+                 class="fas"></i>
+              <span th:text="${course.enrolledCount} + '/' + ${course.capacity}"></span>
+            </span>
+                </td>
+                <td class="action-links">
+                    <a th:href="@{/courses/edit/{id}(id=${course.id})}" class="edit-link"><i class="fas fa-edit"></i> Edit</a>
+                    <a th:href="@{/courses/delete/{id}(id=${course.id})}" class="delete-link" onclick="return confirm('Are you sure you want to delete this course?')"><i class="fas fa-trash-alt"></i> Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- No Results -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <i class="fas fa-book-open"></i>
+            <h3>No courses found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination">
+        <button class="page-btn" onclick="prevPage()" id="prevBtn"><i class="fas fa-chevron-left"></i> Previous</button>
+        <span class="page-info" id="pageInfo">Page 1 of 1</span>
+        <button class="page-btn" onclick="nextPage()" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<script>
+    let allRows = [];
+    let currentPage = 1;
+    const rowsPerPage = 5;
+
+    // Auto-hide toasts
+    setTimeout(() => {
+      const toasts = document.querySelectorAll('.toast');
+      toasts.forEach(toast => toast.style.display = 'none');
+    }, 3000);
+
+    // Store all rows
+    function storeRows() {
+      const tbody = document.getElementById('tableBody');
+      const rows = tbody.querySelectorAll('tr');
+      allRows = Array.from(rows);
+    }
+
+    // Get capacity percentage from cell
+    function getCapacityPercentage(capacityText) {
+      const match = capacityText.match(/(\d+)\/(\d+)/);
+      if (match) {
+        return (parseInt(match[1]) / parseInt(match[2])) * 100;
+      }
+      return 0;
+    }
+
+    // Apply filters
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const deptFilter = document.getElementById('deptFilter').value;
+      const capacityFilter = document.getElementById('capacityFilter').value;
+
+      const filteredRows = allRows.filter(row => {
+        const courseCode = row.cells[0]?.innerText.toLowerCase() || '';
+        const courseName = row.cells[1]?.innerText.toLowerCase() || '';
+        const instructor = row.cells[3]?.innerText.toLowerCase() || '';
+        const department = row.cells[4]?.innerText || '';
+        const capacityText = row.cells[5]?.innerText || '';
+
+        // Search filter
+        const matchesSearch = searchTerm === '' ||
+          courseCode.includes(searchTerm) ||
+          courseName.includes(searchTerm) ||
+          instructor.includes(searchTerm);
+
+        // Department filter
+        const matchesDept = deptFilter === 'all' || department === deptFilter;
+
+        // Capacity filter
+        let matchesCapacity = true;
+        if (capacityFilter !== 'all') {
+          const percentage = getCapacityPercentage(capacityText);
+          if (capacityFilter === 'low') matchesCapacity = percentage <= 40;
+          else if (capacityFilter === 'medium') matchesCapacity = percentage > 40 && percentage <= 70;
+          else if (capacityFilter === 'high') matchesCapacity = percentage > 70 && percentage < 100;
+          else if (capacityFilter === 'full') matchesCapacity = percentage === 100;
+        }
+
+        return matchesSearch && matchesDept && matchesCapacity;
+      });
+
+      displayPage(filteredRows, 1);
+      currentPage = 1;
+
+      const noResultsDiv = document.getElementById('noResults');
+      if (filteredRows.length === 0) {
+        noResultsDiv.style.display = 'block';
+      } else {
+        noResultsDiv.style.display = 'none';
+      }
+    }
+
+    // Display page
+    function displayPage(rows, page) {
+      const tbody = document.getElementById('tableBody');
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageRows = rows.slice(start, end);
+
+      tbody.innerHTML = '';
+      pageRows.forEach(row => tbody.appendChild(row.cloneNode(true)));
+
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+      document.getElementById('pageInfo').innerText = `Page ${page} of ${totalPages || 1}`;
+
+      document.getElementById('prevBtn').disabled = page === 1;
+      document.getElementById('nextBtn').disabled = page === totalPages || totalPages === 0;
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        applyFilters();
+      }
+    }
+
+    function nextPage() {
+      currentPage++;
+      applyFilters();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('deptFilter').value = 'all';
+      document.getElementById('capacityFilter').value = 'all';
+      applyFilters();
+    }
+
+    // Initialize
+    window.onload = () => {
+      storeRows();
+      applyFilters();
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaPro | Add New Course</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          min-height: 100vh;
+        }
+
+        /* Main Container */
+        .main-container {
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 30px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+          background: white;
+          border-radius: 20px;
+          padding: 20px 30px;
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+          font-size: 24px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+          padding: 10px 24px;
+          background: #f1f5f9;
+          color: #475569;
+          border-radius: 30px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+          background: #4f46e5;
+          color: white;
+        }
+
+        /* Page Header */
+        .page-header {
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          border-radius: 24px;
+          padding: 35px 40px;
+          margin-bottom: 30px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .page-header::before {
+          content: '📚';
+          position: absolute;
+          bottom: -20px;
+          right: 20px;
+          font-size: 100px;
+          opacity: 0.1;
+        }
+
+        .page-header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .page-header p {
+          opacity: 0.8;
+          font-size: 14px;
+        }
+
+        /* Form Card */
+        .form-card {
+          background: white;
+          border-radius: 24px;
+          padding: 35px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Form Grid */
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 25px;
+        }
+
+        .full-width {
+          grid-column: span 2;
+        }
+
+        /* Form Groups */
+        .form-group {
+          margin-bottom: 5px;
+        }
+
+        .form-group label {
+          display: block;
+          font-size: 13px;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+          color: #ef4444;
+          margin-left: 4px;
+        }
+
+        .input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 14px;
+          color: #94a3b8;
+          font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+          width: 100%;
+          padding: 12px 16px 12px 42px;
+          border: 2px solid #e2e8f0;
+          border-radius: 14px;
+          font-size: 14px;
+          transition: all 0.3s;
+          background: #f8fafc;
+          font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #4f46e5;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        /* Validation States */
+        .form-group input.valid,
+        .form-group select.valid,
+        .form-group textarea.valid {
+          border-color: #10b981;
+          background: #ecfdf5;
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid,
+        .form-group textarea.invalid {
+          border-color: #ef4444;
+          background: #fef2f2;
+        }
+
+        /* Validation Messages */
+        .validation-message {
+          font-size: 11px;
+          margin-top: 6px;
+          margin-left: 10px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-weight: 500;
+        }
+
+        .validation-message.error {
+          color: #ef4444;
+        }
+
+        .validation-message.success {
+          color: #10b981;
+        }
+
+        .validation-message.info {
+          color: #64748b;
+        }
+
+        .validation-message i {
+          font-size: 10px;
+        }
+
+        /* Action Buttons */
+        .form-actions {
+          display: flex;
+          gap: 15px;
+          margin-top: 30px;
+          padding-top: 25px;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-save {
+          padding: 14px 32px;
+          background: linear-gradient(135deg, #4f46e5, #06b6d4);
+          color: white;
+          border: none;
+          border-radius: 14px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 14px;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-save:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+        }
+
+        .btn-cancel {
+          padding: 14px 32px;
+          background: white;
+          color: #64748b;
+          border: 2px solid #e2e8f0;
+          border-radius: 14px;
+          cursor: pointer;
+          font-weight: 600;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+        }
+
+        /* Toast Message */
+        .toast {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          background: white;
+          padding: 12px 24px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+          animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.error { border-left: 4px solid #ef4444; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .main-container { padding: 20px; }
+          .form-grid { grid-template-columns: 1fr; }
+          .full-width { grid-column: span 1; }
+          .form-card { padding: 25px; }
+          .form-actions { flex-direction: column; }
+          .page-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="logo">AcademiaPro</div>
+        <a href="/courses" class="back-btn"><i class="fas fa-arrow-left"></i> Cancel & Back</a>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-plus-circle"></i> Add New Course</h1>
+        <p>Fill in the details below to create a new course</p>
+    </div>
+
+    <!-- Error Toast -->
+    <div th:if="${error}" class="toast error" id="errorToast">
+        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <form id="courseForm" th:action="@{/courses/add}" th:object="${course}" method="post" onsubmit="return validateForm()">
+
+            <div class="form-grid">
+                <!-- Course Code -->
+                <div class="form-group">
+                    <label>Course Code <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-code input-icon"></i>
+                        <input type="text" id="courseCode" name="courseCode" th:field="*{courseCode}" placeholder="e.g., CS101" required>
+                    </div>
+                    <div class="validation-message" id="courseCodeMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter a unique course code</span>
+                    </div>
+                </div>
+
+                <!-- Course Name -->
+                <div class="form-group">
+                    <label>Course Name <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-book input-icon"></i>
+                        <input type="text" id="courseName" name="courseName" th:field="*{courseName}" placeholder="e.g., Introduction to Programming" required>
+                    </div>
+                    <div class="validation-message" id="courseNameMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter the full course name</span>
+                    </div>
+                </div>
+
+                <!-- Credits -->
+                <div class="form-group">
+                    <label>Credits <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-star input-icon"></i>
+                        <input type="number" id="credits" name="credits" th:field="*{credits}" placeholder="e.g., 3" min="1" max="6" required>
+                    </div>
+                    <div class="validation-message" id="creditsMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter credits (1-6)</span>
+                    </div>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label>Department <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-building input-icon"></i>
+                        <select id="department" name="department" th:field="*{department}" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Business">Business</option>
+                            <option value="Science">Science</option>
+                            <option value="Arts">Arts</option>
+                        </select>
+                    </div>
+                    <div class="validation-message" id="departmentMsg">
+                        <i class="fas fa-info-circle"></i> <span>Select the department offering this course</span>
+                    </div>
+                </div>
+
+                <!-- Instructor -->
+                <div class="form-group">
+                    <label>Instructor <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-chalkboard-user input-icon"></i>
+                        <input type="text" id="instructor" name="instructor" th:field="*{instructor}" placeholder="e.g., Dr. John Smith" required>
+                    </div>
+                    <div class="validation-message" id="instructorMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter the instructor's name</span>
+                    </div>
+                </div>
+
+                <!-- Capacity -->
+                <div class="form-group">
+                    <label>Capacity <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-users input-icon"></i>
+                        <input type="number" id="capacity" name="capacity" th:field="*{capacity}" placeholder="e.g., 30" min="1" max="200" required>
+                    </div>
+                    <div class="validation-message" id="capacityMsg">
+                        <i class="fas fa-info-circle"></i> <span>Enter maximum student capacity (1-200)</span>
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                <div class="form-group">
+                    <label>Schedule</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-alt input-icon"></i>
+                        <input type="text" id="schedule" name="schedule" th:field="*{schedule}" placeholder="e.g., Mon/Wed 9:00-10:30 AM">
+                    </div>
+                    <div class="validation-message" id="scheduleMsg">
+                        <i class="fas fa-info-circle"></i> <span>Optional - Enter class schedule</span>
+                    </div>
+                </div>
+
+                <!-- Room -->
+                <div class="form-group">
+                    <label>Room</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-door-open input-icon"></i>
+                        <input type="text" id="room" name="room" th:field="*{room}" placeholder="e.g., Room 101, Hall A">
+                    </div>
+                    <div class="validation-message" id="roomMsg">
+                        <i class="fas fa-info-circle"></i> <span>Optional - Enter classroom location</span>
+                    </div>
+                </div>
+
+                <!-- Semester -->
+                <div class="form-group">
+                    <label>Semester</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-week input-icon"></i>
+                        <select id="semester" name="semester" th:field="*{semester}">
+                            <option value="">Select Semester</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+                    </div>
+                    <div class="validation-message" id="semesterMsg">
+                        <i class="fas fa-info-circle"></i> <span>Optional - Select semester</span>
+                    </div>
+                </div>
+
+                <!-- Year -->
+                <div class="form-group">
+                    <label>Year</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar input-icon"></i>
+                        <input type="number" id="year" name="year" th:field="*{year}" placeholder="e.g., 2024" min="2020" max="2030">
+                    </div>
+                    <div class="validation-message" id="yearMsg">
+                        <i class="fas fa-info-circle"></i> <span>Optional - Enter academic year</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn-save" id="submitBtn">
+                    <i class="fas fa-save"></i> Save Course
+                </button>
+                <a href="/courses" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Field validation functions
+    function validateCourseCode() {
+      const field = document.getElementById('courseCode');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('courseCodeMsg');
+      const pattern = /^[A-Z]{2,4}[0-9]{3}$/;
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Course code is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value.length < 3) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Course code must be at least 3 characters</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid course code</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateCourseName() {
+      const field = document.getElementById('courseName');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('courseNameMsg');
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Course name is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value.length < 3) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Course name must be at least 3 characters</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid course name</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateCredits() {
+      const field = document.getElementById('credits');
+      const value = parseInt(field.value);
+      const msgDiv = document.getElementById('creditsMsg');
+
+      if (isNaN(value) || value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Credits are required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value < 1 || value > 6) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Credits must be between 1 and 6</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid credits</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateDepartment() {
+      const field = document.getElementById('department');
+      const value = field.value;
+      const msgDiv = document.getElementById('departmentMsg');
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Department is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Department selected</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateInstructor() {
+      const field = document.getElementById('instructor');
+      const value = field.value.trim();
+      const msgDiv = document.getElementById('instructorMsg');
+
+      if (value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Instructor name is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value.length < 3) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Enter full instructor name</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid instructor name</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateCapacity() {
+      const field = document.getElementById('capacity');
+      const value = parseInt(field.value);
+      const msgDiv = document.getElementById('capacityMsg');
+
+      if (isNaN(value) || value === '') {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Capacity is required</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else if (value < 1 || value > 200) {
+        field.classList.add('invalid');
+        field.classList.remove('valid');
+        msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Capacity must be between 1 and 200</span>';
+        msgDiv.classList.add('error');
+        msgDiv.classList.remove('success');
+        return false;
+      } else {
+        field.classList.add('valid');
+        field.classList.remove('invalid');
+        msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid capacity</span>';
+        msgDiv.classList.add('success');
+        msgDiv.classList.remove('error');
+        return true;
+      }
+    }
+
+    // Optional field validations
+    function validateSchedule() {
+      const field = document.getElementById('schedule');
+      const msgDiv = document.getElementById('scheduleMsg');
+      // Optional field - always valid
+      msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Optional - Enter class schedule</span>';
+      msgDiv.classList.remove('error', 'success');
+      return true;
+    }
+
+    function validateRoom() {
+      const field = document.getElementById('room');
+      const msgDiv = document.getElementById('roomMsg');
+      msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Optional - Enter classroom location</span>';
+      msgDiv.classList.remove('error', 'success');
+      return true;
+    }
+
+    function validateSemester() {
+      const field = document.getElementById('semester');
+      const msgDiv = document.getElementById('semesterMsg');
+      msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Optional - Select semester</span>';
+      msgDiv.classList.remove('error', 'success');
+      return true;
+    }
+
+    function validateYear() {
+      const field = document.getElementById('year');
+      const value = field.value;
+      const msgDiv = document.getElementById('yearMsg');
+      if (value !== '') {
+        const year = parseInt(value);
+        if (year < 2020 || year > 2030) {
+          field.classList.add('invalid');
+          field.classList.remove('valid');
+          msgDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>Year must be between 2020-2030</span>';
+          msgDiv.classList.add('error');
+          msgDiv.classList.remove('success');
+          return false;
+        } else {
+          field.classList.add('valid');
+          field.classList.remove('invalid');
+          msgDiv.innerHTML = '<i class="fas fa-check-circle"></i> <span>Valid year</span>';
+          msgDiv.classList.add('success');
+          msgDiv.classList.remove('error');
+          return true;
+        }
+      } else {
+        field.classList.remove('invalid', 'valid');
+        msgDiv.innerHTML = '<i class="fas fa-info-circle"></i> <span>Optional - Enter academic year</span>';
+        msgDiv.classList.remove('error', 'success');
+        return true;
+      }
+    }
+
+    // Real-time validation event listeners
+    document.getElementById('courseCode').addEventListener('input', validateCourseCode);
+    document.getElementById('courseName').addEventListener('input', validateCourseName);
+    document.getElementById('credits').addEventListener('input', validateCredits);
+    document.getElementById('department').addEventListener('change', validateDepartment);
+    document.getElementById('instructor').addEventListener('input', validateInstructor);
+    document.getElementById('capacity').addEventListener('input', validateCapacity);
+    document.getElementById('schedule').addEventListener('input', validateSchedule);
+    document.getElementById('room').addEventListener('input', validateRoom);
+    document.getElementById('semester').addEventListener('change', validateSemester);
+    document.getElementById('year').addEventListener('input', validateYear);
+
+    // Full form validation
+    function validateForm() {
+      const isValid = validateCourseCode() &
+                      validateCourseName() &
+                      validateCredits() &
+                      validateDepartment() &
+                      validateInstructor() &
+                      validateCapacity() &
+                      validateSchedule() &
+                      validateRoom() &
+                      validateSemester() &
+                      validateYear();
+
+      if (!isValid) {
+        const firstInvalid = document.querySelector('.invalid');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstInvalid.focus();
+        }
+        return false;
+      }
+      return true;
+    }
+
+    // Auto-hide toast
+    setTimeout(() => {
+      const toast = document.getElementById('errorToast');
+      if (toast) toast.style.display = 'none';
+    }, 5000);
+</script>
+</body>
+</html>
