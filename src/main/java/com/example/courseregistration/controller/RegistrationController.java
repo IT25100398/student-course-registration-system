@@ -17,7 +17,7 @@ public class RegistrationController {
     private final StudentService studentService;
     private final CourseService courseService;
 
-    @GetMapping//getting values from server
+    @GetMapping//Displaying Registration List
     public String listRegistrations(Model model) {
         model.addAttribute("registrations", registrationService.getAllRegistrations());
         return "registrations/list";
