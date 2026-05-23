@@ -17,4 +17,5 @@ public class StudentDTO {
     private String address;
     private LocalDate enrollmentDate;
     private String status;
+
 }

@@ -61,6 +61,44 @@ h1 {
     font-weight: bold;
 }
 
+/* ✅ NEW - Edit Link Styles */
+.edit-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-right: 12px;
+}
+
+.edit-link:hover {
+    color: #06b6d4;
+}
+
+/* ✅ NEW - Drop Link Styles */
+.drop-link {
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-right: 12px;
+}
+
+.drop-link:hover {
+    color: #dc2626;
+}
+
+/* ✅ NEW - Receipt Link Styles */
+.receipt-link {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.receipt-link:hover {
+    color: #059669;
+}
+
 /* Navigation Buttons */
 .nav-links {
     display: grid;
