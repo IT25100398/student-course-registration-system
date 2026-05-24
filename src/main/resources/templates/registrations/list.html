@@ -547,14 +547,8 @@
                     <span th:if="${reg.grade == null}">-</span>
                 </td>
                 <td class="action-links">
-                    <a th:href="@{/registrations/drop/{sid}/{cid}(sid=${reg.studentId},cid=${reg.courseId})}"
-                       class="drop-link"
-                       onclick="return confirm('Are you sure you want to drop this registration?')">
-                        <i class="fas fa-trash-alt"></i> Drop
-                    </a>
-                    <a th:href="@{/registrations/receipt/{id}(id=${reg.id})}" class="receipt-link">
-                        <i class="fas fa-receipt"></i> Receipt
-                    </a>
+                    <a th:href="@{/registrations/edit/{id}(id=${reg.id})}" class="edit-link"><i class="fas fa-edit"></i> Edit</a>
+                    <a th:href="@{/registrations/delete/{id}(id=${reg.id})}" class="delete-link" onclick="return confirm('Delete this registration?')"><i class="fas fa-trash-alt"></i> Delete</a>
                 </td>
             </tr>
             </tbody>

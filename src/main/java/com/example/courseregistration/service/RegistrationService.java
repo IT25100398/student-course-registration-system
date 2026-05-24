@@ -27,6 +27,17 @@ public class RegistrationService {
                 .collect(Collectors.toList());
     }
 
+    public RegistrationDTO getRegistrationById(Long id) {
+        Registration registration = registrationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Registration not found with id: " + id));
+        return convertToDTO(registration);
+    }
+
+    public Registration getRegistrationEntityById(Long id) {
+        return registrationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Registration not found with id: " + id));
+    }
+
     @Transactional
     public RegistrationDTO registerCourse(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId)
@@ -56,6 +67,46 @@ public class RegistrationService {
     }
 
     @Transactional
+    public RegistrationDTO updateRegistration(Long id, RegistrationDTO registrationDTO) {
+        Registration registration = registrationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Registration not found"));
+
+        // Update grade
+        if (registrationDTO.getGrade() != null) {
+            registration.setGrade(registrationDTO.getGrade());
+        }
+
+        // Update status
+        if (registrationDTO.getStatus() != null) {
+            String oldStatus = registration.getStatus();
+            String newStatus = registrationDTO.getStatus();
+
+            registration.setStatus(newStatus);
+
+            // Update course enrolled count if status changed from ENROLLED to DROPPED
+            if (oldStatus.equals("ENROLLED") && newStatus.equals("DROPPED")) {
+                Course course = registration.getCourse();
+                course.setEnrolledCount(course.getEnrolledCount() - 1);
+                courseRepository.save(course);
+            }
+
+            // Update course enrolled count if status changed from DROPPED to ENROLLED
+            if (oldStatus.equals("DROPPED") && newStatus.equals("ENROLLED")) {
+                Course course = registration.getCourse();
+                if (course.isAvailable()) {
+                    course.setEnrolledCount(course.getEnrolledCount() + 1);
+                    courseRepository.save(course);
+                } else {
+                    throw new RuntimeException("Cannot re-enroll - Course is full");
+                }
+            }
+        }
+
+        registration = registrationRepository.save(registration);
+        return convertToDTO(registration);
+    }
+
+    @Transactional
     public void dropCourse(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -69,6 +120,29 @@ public class RegistrationService {
         courseRepository.save(course);
 
         registrationRepository.delete(registration);
+    }
+
+    @Transactional
+    public void deleteRegistration(Long id) {
+        Registration registration = registrationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Registration not found"));
+
+        // If status is ENROLLED, decrease course count
+        if (registration.getStatus().equals("ENROLLED")) {
+            Course course = registration.getCourse();
+            course.setEnrolledCount(course.getEnrolledCount() - 1);
+            courseRepository.save(course);
+        }
+
+        registrationRepository.delete(registration);
+    }
+
+    public List<RegistrationDTO> getRegistrationsByStudentId(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        return registrationRepository.findByStudent(student).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     private RegistrationDTO convertToDTO(Registration registration) {

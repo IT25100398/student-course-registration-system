@@ -1,5 +1,6 @@
 package com.example.courseregistration.controller;
 
+import com.example.courseregistration.dto.RegistrationDTO;
 import com.example.courseregistration.service.CourseService;
 import com.example.courseregistration.service.RegistrationService;
 import com.example.courseregistration.service.StudentService;
@@ -40,6 +41,36 @@ public class RegistrationController {
         }
         return "redirect:/registrations";
     }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        RegistrationDTO registration = registrationService.getRegistrationById(id);
+        model.addAttribute("registration", registration);
+        return "registrations/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateRegistration(@PathVariable Long id, @ModelAttribute RegistrationDTO registrationDTO, RedirectAttributes redirectAttributes) {
+        try {
+            registrationService.updateRegistration(id, registrationDTO);
+            redirectAttributes.addFlashAttribute("success", "Registration updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/registrations";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteRegistration(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            registrationService.deleteRegistration(id);
+            redirectAttributes.addFlashAttribute("success", "Registration deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/registrations";
+    }
+
 
     @GetMapping("/drop/{studentId}/{courseId}")
     public String dropCourse(@PathVariable Long studentId, @PathVariable Long courseId, RedirectAttributes redirectAttributes) {
