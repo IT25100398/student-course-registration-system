@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaPro | Edit Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .top-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            padding: 10px 24px;
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            border-radius: 24px;
+            padding: 35px 40px;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '✏️';
+            position: absolute;
+            bottom: -20px;
+            right: 20px;
+            font-size: 100px;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-update {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79,70,229,0.3);
+        }
+
+        .btn-cancel {
+            padding: 14px 32px;
+            background: white;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+        }
+
+        @media (max-width: 768px) {
+            .main-container { padding: 20px; }
+            .form-card { padding: 25px; }
+            .form-actions { flex-direction: column; }
+            .page-header h1 { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="top-bar">
+        <div class="logo">AcademiaPro</div>
+        <a href="/registrations" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Registrations</a>
+    </div>
+
+    <div class="page-header">
+        <h1><i class="fas fa-edit"></i> Edit Registration</h1>
+        <p>Update grade and status for this course registration</p>
+    </div>
+
+    <!-- Info Card - Readonly Information -->
+    <div class="info-card">
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-user"></i> Student</span>
+            <span class="info-value" th:text="${registration.studentName}">-</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-book"></i> Course</span>
+            <span class="info-value" th:text="${registration.courseName} + ' (' + ${registration.courseCode} + ')'">-</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-calendar"></i> Registration Date</span>
+            <span class="info-value" th:text="${registration.registrationDate}">-</span>
+        </div>
+    </div>
+
+    <!-- Form - Editable Fields -->
+    <div class="form-card">
+        <form th:action="@{/registrations/edit/{id}(id=${registration.id})}" th:object="${registration}" method="post">
+
+            <!-- Grade Selection -->
+            <div class="form-group">
+                <label><i class="fas fa-star"></i> Grade</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-chart-line input-icon"></i>
+                    <select th:field="*{grade}">
+                        <option value="">-- Select Grade --</option>
+                        <option value="A+">A+ (Outstanding)</option>
+                        <option value="A">A (Excellent)</option>
+                        <option value="A-">A- (Very Good)</option>
+                        <option value="B+">B+ (Good)</option>
+                        <option value="B">B (Above Average)</option>
+                        <option value="B-">B- (Average)</option>
+                        <option value="C+">C+ (Satisfactory)</option>
+                        <option value="C">C (Pass)</option>
+                        <option value="D">D (Weak Pass)</option>
+                        <option value="E">E (Fail)</option>
+                        <option value="I">I (Incomplete)</option>
+                        <option value="W">W (Withdrawn)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Status Selection -->
+            <div class="form-group">
+                <label><i class="fas fa-circle"></i> Status</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-flag-checkered input-icon"></i>
+                    <select th:field="*{status}">
+                        <option value="ENROLLED">✅ Enrolled</option>
+                        <option value="DROPPED">❌ Dropped</option>
+                        <option value="COMPLETED">🎓 Completed</option>
+                        <option value="PENDING">⏳ Pending</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-save"></i> Update Registration
+                </button>
+                <a href="/registrations" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
