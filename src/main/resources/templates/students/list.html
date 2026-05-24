@@ -113,7 +113,7 @@
         <div class="stats-row"><div class="stat-card"><div class="stat-number" th:text="${students.size()}">0</div><div class="stat-label">Total Students</div></div><div class="stat-card"><div class="stat-number" id="activeCount">0</div><div class="stat-label">Active</div></div><div class="stat-card"><div class="stat-number" id="inactiveCount">0</div><div class="stat-label">Inactive</div></div><div class="stat-card"><div class="stat-number">0</div><div class="stat-label">New This Month</div></div></div>
         <div class="search-bar"><div class="search-group"><label>SEARCH</label><input type="text" id="searchInput" placeholder="Search by name, email or ID..."></div><div class="search-group"><label>STATUS</label><select id="statusFilter"><option value="all">All Status</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></div><div><button class="search-btn" onclick="applyFilters()"><i class="fas fa-search"></i> Search</button><button class="reset-btn" onclick="resetFilters()"><i class="fas fa-undo"></i> Reset</button></div></div>
         <div class="action-buttons"><a href="/students/add" class="btn-primary"><i class="fas fa-plus"></i> Add New Student</a><a href="/students" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh List</a></div>
-        <div class="table-container"><table><thead><tr><th>Student ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Enrollment Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tableBody"><tr th:each="student : ${students}"><td th:text="${student.studentId}">-</td><td th:text="${student.fullName}">-<td><td th:text="${student.email}">-</td><td th:text="${student.phone != null ? student.phone : '-'}">-</td><td th:text="${student.enrollmentDate}">-</td><td><span class="status-badge" th:classappend="${student.status == 'ACTIVE'} ? 'status-active' : 'status-inactive'"><span th:text="${student.status}"></span></span></td><td class="action-links"><a th:href="@{/students/edit/{id}(id=${student.id})}" class="edit-link"><i class="fas fa-edit"></i> Edit</a><a th:href="@{/students/delete/{id}(id=${student.id})}" class="delete-link" onclick="return confirm('Delete?')"><i class="fas fa-trash-alt"></i> Delete</a></td></tr></tbody></tr><div id="noResults" class="no-results" style="display:none;"><i class="fas fa-user-graduate"></i><h3>No students found</h3></div></div>
+        <div class="table-container"><table><thead><tr><th>Student ID</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Enrollment Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tableBody"><tr th:each="student : ${students}"><td th:text="${student.studentId}">-</td><td th:text="${student.fullName}">-</td><td th:text="${student.email}">-</td><td th:text="${student.phone != null ? student.phone : '-'}">-</td><td th:text="${student.enrollmentDate}">-</td><td><span class="status-badge" th:classappend="${student.status == 'ACTIVE'} ? 'status-active' : 'status-inactive'"><span th:text="${student.status}"></span></span></td><td class="action-links"><a th:href="@{/students/edit/{id}(id=${student.id})}" class="edit-link"><i class="fas fa-edit"></i> Edit</a><a th:href="@{/students/delete/{id}(id=${student.id})}" class="delete-link" onclick="return confirm('Delete?')"><i class="fas fa-trash-alt"></i> Delete</a></td></tr></tbody></table><div id="noResults" class="no-results" style="display:none;"><i class="fas fa-user-graduate"></i><h3>No students found</h3></div></div>
         <div class="pagination"><button class="page-btn" onclick="prevPage()" id="prevBtn">Previous</button><span class="page-info" id="pageInfo">Page 1 of 1</span><button class="page-btn" onclick="nextPage()" id="nextBtn">Next</button></div>
     </div>
 </div>
@@ -121,13 +121,67 @@
 <script>
     let allRows=[],currentPage=1,rowsPerPage=5;
     setTimeout(()=>{document.querySelectorAll('.toast').forEach(t=>t.style.display='none');},3000);
-    function storeRows(){const tbody=document.getElementById('tableBody'),rows=tbody.querySelectorAll('tr');allRows=Array.from(rows);let a=0,i=0;allRows.forEach(r=>{const s=r.cells[5]?.innerText.trim();if(s==='ACTIVE')a++;else if(s==='INACTIVE')i++;});document.getElementById('activeCount').innerText=a;document.getElementById('inactiveCount').innerText=i;}
-    function applyFilters(){const s=document.getElementById('searchInput').value.toLowerCase(),f=document.getElementById('statusFilter').value;const fr=allRows.filter(r=>{const n=r.cells[1]?.innerText.toLowerCase()||'',id=r.cells[0]?.innerText.toLowerCase()||'',e=r.cells[2]?.innerText.toLowerCase()||'',st=r.cells[5]?.innerText.trim()||'';const ms=s===''||n.includes(s)||id.includes(s)||e.includes(s);const mf=f==='all'||st===f;return ms&&mf;});displayPage(fr,1);currentPage=1;document.getElementById('noResults').style.display=fr.length===0?'block':'none';}
-    function displayPage(rows,page){const tbody=document.getElementById('tableBody'),s=(page-1)*rowsPerPage,e=s+rowsPerPage,pr=rows.slice(s,e);tbody.innerHTML='';pr.forEach(r=>tbody.appendChild(r.cloneNode(true)));const tp=Math.ceil(rows.length/rowsPerPage);document.getElementById('pageInfo').innerText=`Page ${page} of ${tp||1}`;document.getElementById('prevBtn').disabled=page===1;document.getElementById('nextBtn').disabled=page===tp||tp===0;}
+
+    function storeRows(){
+        const tbody=document.getElementById('tableBody');
+        const rows=tbody.querySelectorAll('tr');
+        allRows=Array.from(rows);
+        let active=0,inactive=0;
+        allRows.forEach(row=>{
+            const statusCell=row.cells[5]?.innerText.trim();
+            if(statusCell==='ACTIVE') active++;
+            else if(statusCell==='INACTIVE') inactive++;
+        });
+        document.getElementById('activeCount').innerText=active;
+        document.getElementById('inactiveCount').innerText=inactive;
+    }
+
+    function applyFilters(){
+        const searchTerm=document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter=document.getElementById('statusFilter').value;
+
+        const filteredRows=allRows.filter(row=>{
+            // Correct column indexes (0-based)
+            const studentId=row.cells[0]?.innerText.toLowerCase()||'';
+            const fullName=row.cells[1]?.innerText.toLowerCase()||'';
+            const email=row.cells[2]?.innerText.toLowerCase()||'';
+            const phone=row.cells[3]?.innerText.toLowerCase()||'';
+            const status=row.cells[5]?.innerText.trim()||'';  // Status is column 6 (index 5)
+
+            const matchesSearch=searchTerm==='' ||
+                               studentId.includes(searchTerm) ||
+                               fullName.includes(searchTerm) ||
+                               email.includes(searchTerm) ||
+                               phone.includes(searchTerm);
+            const matchesStatus=statusFilter==='all' || status===statusFilter;
+
+            return matchesSearch && matchesStatus;
+        });
+
+        displayPage(filteredRows,1);
+        currentPage=1;
+        document.getElementById('noResults').style.display=filteredRows.length===0?'block':'none';
+    }
+
+    function displayPage(rows,page){
+        const tbody=document.getElementById('tableBody');
+        const start=(page-1)*rowsPerPage;
+        const end=start+rowsPerPage;
+        const pageRows=rows.slice(start,end);
+        tbody.innerHTML='';
+        pageRows.forEach(row=>tbody.appendChild(row.cloneNode(true)));
+        const totalPages=Math.ceil(rows.length/rowsPerPage);
+        document.getElementById('pageInfo').innerText=`Page ${page} of ${totalPages||1}`;
+        document.getElementById('prevBtn').disabled=page===1;
+        document.getElementById('nextBtn').disabled=page===totalPages||totalPages===0;
+    }
+
     function prevPage(){if(currentPage>1){currentPage--;applyFilters();}}
     function nextPage(){currentPage++;applyFilters();}
     function resetFilters(){document.getElementById('searchInput').value='';document.getElementById('statusFilter').value='all';applyFilters();}
+
     window.onload=()=>{setTimeout(()=>{storeRows();applyFilters();},100);};
+
     function toggleSidebar(){const s=document.getElementById('sidebar'),b=document.body,h=document.getElementById('hamburger');s.classList.toggle('closed');b.classList.toggle('sidebar-closed');h.style.transform=s.classList.contains('closed')?'rotate(90deg)':'rotate(0deg)';}
     function updateTime(){const n=new Date();document.getElementById('liveTime').innerHTML=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
     updateTime();setInterval(updateTime,1000);
